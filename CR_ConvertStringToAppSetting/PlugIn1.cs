@@ -84,10 +84,9 @@ namespace CR_ConvertStringToAppSetting
                     AppSettings = CreateHTMLNode("appSettings");
                     RootNode.AddNode(AppSettings);
                     RewriteNodeInDoc(RootNode, configDoc);
-
+                    RootNode = (SP.HtmlElement)configDoc.FileNode.Nodes[1];
+                    AppSettings = GetAppSettings(RootNode);
                 }
-                RootNode = (SP.HtmlElement)configDoc.FileNode.Nodes[1];
-                AppSettings = GetAppSettings(RootNode);
 
                 // Generate a new setting... Add it to correct location in App.config.
                 string SettingValue = (string)StringLiteral.PrimitiveValue;
@@ -121,6 +120,9 @@ namespace CR_ConvertStringToAppSetting
                 CodeDoc.Activate();
                 CodeRush.LinkedIdentifiers.Invalidate(CodeDoc);
                 CodeRush.Selection.SelectRange(CodeSourceRange);
+                configDoc.ParseIfTextChanged();
+                configDoc.ParseIfNeeded();
+
             }
         }
 
@@ -141,7 +143,7 @@ namespace CR_ConvertStringToAppSetting
         }
         private void RewriteNodeInDoc(LanguageElement Node, TextDocument Doc)
         {
-            var Code = CodeRush.CodeMod.GenerateCode(Node);
+            var Code = CodeRush.Language.GenerateElement(Node, Doc.Language);
             Doc.SetText(Node.Range, Code);
         }
         private static SP.HtmlElement CreateHTMLNode(string NodeName, bool EmptyTag = false)
