@@ -3,7 +3,7 @@
   <Identifier Id="CR_ConvertStringToAppSetting">
     <Name>ConvertStringToAppSetting for CodeRush</Name>
     <Author>Rory Becker</Author>
-    <Version>1.0</Version>
+    <Version>1.1</Version>
     <Description xml:space="preserve">ConvertStringToAppSetting provides a refactoring to convert string literals into entries in an application configuration file (app.config).</Description>
     <Locale>1033</Locale>
     <Icon>CR-Plug-in.png</Icon>
