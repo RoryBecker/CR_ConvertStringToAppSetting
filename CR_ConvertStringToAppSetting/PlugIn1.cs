@@ -25,10 +25,6 @@ namespace CR_ConvertStringToAppSetting
         #region FinalizePlugIn
         public override void FinalizePlugIn()
         {
-            //
-            // TODO: Add your finalization code here.
-            //
-
             base.FinalizePlugIn();
         }
         #endregion
@@ -65,9 +61,16 @@ namespace CR_ConvertStringToAppSetting
                 string BasePath = System.IO.Path.GetDirectoryName(ActiveProject.FilePath);
                 string Filename = BasePath + "\\App.Config";
                 TextDocument configDoc = CodeRush.Documents.GetTextDocument(Filename);
-
-                if (configDoc == null)
+                
+                if (configDoc == null) 
                 {
+                    // Open configDoc
+                    configDoc = (TextDocument)CodeRush.File.Activate(Filename);
+                }
+
+                if (configDoc == null) 
+                {
+                    // Create configDoc
                     string DefaultSettings = "<?xml version=\"1.0\" encoding=\"utf-8\" ?><configuration></configuration>";
                     CodeRush.File.WriteTextFile(Filename, DefaultSettings);
                     CodeRush.Project.AddFile(ActiveProject, Filename);
@@ -104,8 +107,10 @@ namespace CR_ConvertStringToAppSetting
                 CodeDoc.ParseIfTextChanged();
                 CodeDoc.ParseIfNeeded();
                 var SourceNode = CodeDoc.GetNodeAt(NewCodeRange.Start);
-
+                
                 // Find Newly created Setting
+                configDoc.ParseIfTextChanged();
+                configDoc.ParseIfNeeded();
                 RootNode = (SP.HtmlElement)configDoc.FileNode.Nodes[1];
                 AppSettings = GetAppSettings(RootNode);
                 SettingNode = GetSettingWithKeyAndValue(AppSettings, SettingName, SettingValue);
@@ -115,7 +120,7 @@ namespace CR_ConvertStringToAppSetting
                 SourceRange StringRange = (SourceNode.Parent.Parent.Parent.Parent.DetailNodes[0] as LanguageElement).Range;
                 SourceRange CodeSourceRange = new SourceRange(StringRange.Start.OffsetPoint(0, 1), StringRange.End.OffsetPoint(0, -1));
                 LinkSet.Add(new FileSourceRange(CodeDoc.FileNode, CodeSourceRange));
-                LinkSet.Add(new FileSourceRange(configDoc.FileNode, SettingNode.Attributes["Key"].ValueRange));
+                LinkSet.Add(new FileSourceRange(configDoc.FileNode, SettingNode.Attributes["key"].ValueRange));
                 CodeRush.LinkedIdentifiers.Invalidate(configDoc);
                 CodeDoc.Activate();
                 CodeRush.LinkedIdentifiers.Invalidate(CodeDoc);
