@@ -47,6 +47,8 @@ namespace CR_ConvertStringToAppSetting
                 return;
             if (Literal.PrimitiveType != PrimitiveType.String)
                 return;
+            if (((string)Literal.PrimitiveValue).Trim() == string.Empty)
+                return;
             ea.Available = true;
         }
         private void ConvertStringToAppSetting_Execute(Object sender, ApplyContentEventArgs ea)
@@ -93,7 +95,7 @@ namespace CR_ConvertStringToAppSetting
 
                 // Generate a new setting... Add it to correct location in App.config.
                 string SettingValue = (string)StringLiteral.PrimitiveValue;
-                string SettingName = "MySetting";
+                string SettingName = SettingValue.Replace(" ", "");
                 SP.HtmlElement SettingNode = CreateSettingNode(SettingName, SettingValue);
                 AppSettings.AddNode(SettingNode);
                 RewriteNodeInDoc(AppSettings, configDoc);
